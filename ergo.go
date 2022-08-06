@@ -1,5 +1,13 @@
 package ergo
 
+import "fmt"
+
+func Annotate(err *error, s string) {
+	if *err != nil {
+		*err = fmt.Errorf("%s: %w", s, *err)
+	}
+}
+
 func Check0(err error) {
 	if err != nil {
 		panic(err)
