@@ -8,31 +8,32 @@ func Annotate(err *error, s string) {
 	}
 }
 
-func Check0(err error) {
-	if err != nil {
-		panic(err)
+func Must0(err error) {
+	if err == nil {
+		return
 	}
+	panic(err)
 }
 
-func Check1[T1 any](arg1 T1, err error) T1 {
-	if err != nil {
-		panic(err)
+func Must1[T1 any](arg1 T1, err error) T1 {
+	if err == nil {
+		return arg1
 	}
-	return arg1
+	panic(err)
 }
 
-func Check2[T1 any, T2 any](arg1 T1, arg2 T2, err error) (T1, T2) {
-	if err != nil {
-		panic(err)
+func Must2[T1 any, T2 any](arg1 T1, arg2 T2, err error) (T1, T2) {
+	if err == nil {
+		return arg1, arg2
 	}
-	return arg1, arg2
+	panic(err)
 }
 
-func Check3[T1 any, T2 any, T3 any](arg1 T1, arg2 T2, arg3 T3, err error) (T1, T2, T3) {
-	if err != nil {
-		panic(err)
+func Must3[T1 any, T2 any, T3 any](arg1 T1, arg2 T2, arg3 T3, err error) (T1, T2, T3) {
+	if err == nil {
+		return arg1, arg2, arg3
 	}
-	return arg1, arg2, arg3
+	panic(err)
 }
 
 func Error1[T1 any](_ T1, err error) error {
