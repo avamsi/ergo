@@ -1,7 +1,5 @@
 package ergo
 
-import "fmt"
-
 func Must0(err error) {
 	if err == nil {
 		return
