@@ -1,5 +1,31 @@
 package ergo
 
+import "fmt"
+
+func Annotate(err *error, msg string) {
+	if *err != nil {
+		*err = fmt.Errorf("%s: %w", msg, *err)
+	}
+}
+
+func Annotatef(err *error, format string, args ...any) {
+	if *err != nil {
+		*err = fmt.Errorf("%s: %w", fmt.Sprintf(format, args...), *err)
+	}
+}
+
+func Error1[T1 any](_ T1, err error) error {
+	return err
+}
+
+func Error2[T1 any, T2 any](_ T1, _ T2, err error) error {
+	return err
+}
+
+func Error3[T1 any, T2 any, T3 any](_ T1, _ T2, _ T3, err error) error {
+	return err
+}
+
 func Must0(err error) {
 	if err == nil {
 		return
@@ -26,16 +52,4 @@ func Must3[T1 any, T2 any, T3 any](arg1 T1, arg2 T2, arg3 T3, err error) (T1, T2
 		return arg1, arg2, arg3
 	}
 	panic(err)
-}
-
-func Error1[T1 any](_ T1, err error) error {
-	return err
-}
-
-func Error2[T1 any, T2 any](_ T1, _ T2, err error) error {
-	return err
-}
-
-func Error3[T1 any, T2 any, T3 any](_ T1, _ T2, _ T3, err error) error {
-	return err
 }
