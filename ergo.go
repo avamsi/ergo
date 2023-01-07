@@ -2,12 +2,6 @@ package ergo
 
 import "fmt"
 
-func Annotate(err *error, s string) {
-	if *err != nil {
-		*err = fmt.Errorf("%s: %w", s, *err)
-	}
-}
-
 func Must0(err error) {
 	if err == nil {
 		return
