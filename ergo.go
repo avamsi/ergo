@@ -53,3 +53,22 @@ func Must3[T1 any, T2 any, T3 any](arg1 T1, arg2 T2, arg3 T3, err error) (T1, T2
 	}
 	panic(err)
 }
+
+// Functions below are arguably not related to error handling, but are still
+// useful enough (and fit with the "ergonic shortcuts" theme).
+
+func Assert(cond bool, msg string) {
+	if !cond {
+		panic(msg)
+	}
+}
+
+func Assertf(cond bool, format string, args ...any) {
+	if !cond {
+		panic(fmt.Sprintf(format, args...))
+	}
+}
+
+func Panicf(format string, args ...any) {
+	panic(fmt.Sprintf(format, args...))
+}
