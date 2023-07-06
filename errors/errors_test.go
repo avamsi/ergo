@@ -79,16 +79,3 @@ func TestAnnotatef(t *testing.T) {
 		})
 	}
 }
-
-func TestErrorN(t *testing.T) {
-	a, b, c, err := 1, 2, errors.New("3"), errors.New("err")
-	if got := Error1(a, err); got != err {
-		t.Errorf("Error1(%#v, %#v) = %#v, want %#v\n", a, err, got, err)
-	}
-	if got := Error2(a, b, err); got != err {
-		t.Errorf("Error2(%#v, %#v, %#v) = %#v, want %#v\n", a, b, err, got, err)
-	}
-	if got := Error3(a, b, c, err); got != err {
-		t.Errorf("Error3(%#v, %#v, %#v, %#v) = %#v, want %#v\n", a, b, c, err, got, err)
-	}
-}

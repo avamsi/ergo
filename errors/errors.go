@@ -13,15 +13,3 @@ func Annotatef(err *error, format string, args ...any) {
 		*err = fmt.Errorf("%s: %w", fmt.Sprintf(format, args...), *err)
 	}
 }
-
-func Error1[T1 any](_ T1, err error) error {
-	return err
-}
-
-func Error2[T1 any, T2 any](_ T1, _ T2, err error) error {
-	return err
-}
-
-func Error3[T1 any, T2 any, T3 any](_ T1, _ T2, _ T3, err error) error {
-	return err
-}

@@ -1,4 +1,4 @@
-package panic
+package check
 
 import (
 	"errors"
@@ -13,60 +13,60 @@ func TestPanic(t *testing.T) {
 		want string
 	}{
 		{
-			name: "assert-false",
+			name: "int-not-nil",
 			fn: func() {
-				Assert(false, "assert")
+				Nil(42)
 			},
-			want: "assert",
+			want: "not nil: 42",
 		},
 		{
-			name: "assertf-false",
+			name: "string-not-nil",
 			fn: func() {
-				Assertf(false, "assert%s", "f")
+				Nil("boo")
 			},
-			want: "assertf",
+			want: "not nil: boo",
 		},
 		{
-			name: "must0-err",
+			name: "error-not-nil",
 			fn: func() {
-				Must0(errors.New("must0"))
+				Nil(errors.New("err"))
 			},
-			want: "must0",
+			want: "not nil: err",
 		},
 		{
-			name: "must1-err",
+			name: "map-not-nil",
 			fn: func() {
-				Must1(1, errors.New("must1"))
+				Nil(map[int]int{})
 			},
-			want: "must1",
+			want: "not nil: map[]",
 		},
 		{
-			name: "must2-err",
+			name: "slice-not-nil",
 			fn: func() {
-				Must2(1, 2, errors.New("must2"))
+				Nil([]int{})
 			},
-			want: "must2",
+			want: "not nil: []",
 		},
 		{
-			name: "must3-err",
+			name: "error-not-ok",
 			fn: func() {
-				Must3(1, 2, 3, errors.New("must3"))
+				Ok(42, errors.New("err"))
 			},
-			want: "must3",
+			want: "err",
 		},
 		{
-			name: "panic",
+			name: "false-not-true",
 			fn: func() {
-				Panic("panic ", 4, 2)
+				True(false, "false")
 			},
-			want: "panic 4 2",
+			want: "false",
 		},
 		{
-			name: "panicf",
+			name: "false-not-true-f",
 			fn: func() {
-				Panicf("panic%s", "f")
+				Truef(false, "false-%s", "f")
 			},
-			want: "panicf",
+			want: "false-f",
 		},
 	}
 	for _, test := range tests {
@@ -91,39 +91,55 @@ func TestNotPanic(t *testing.T) {
 		fn   func()
 	}{
 		{
-			name: "assert-true",
+			name: "nil",
 			fn: func() {
-				Assert(true, "assert-true")
+				Nil(nil)
 			},
 		},
 		{
-			name: "assertf-true",
+			name: "zero-error-nil",
 			fn: func() {
-				Assertf(true, "assertf-%t", true)
+				var err error
+				Nil(err)
 			},
 		},
 		{
-			name: "must0-nil",
+			name: "zero-map-nil",
 			fn: func() {
-				Must0(nil)
+				var m map[int]int
+				Nil(m)
 			},
 		},
 		{
-			name: "must1-nil",
+			name: "zero-slice-nil",
 			fn: func() {
-				Must1(errors.New("1"), nil)
+				var s []int
+				Nil(s)
 			},
 		},
 		{
-			name: "must2-nil",
+			name: "zero-pointer-nil",
 			fn: func() {
-				Must2(1, errors.New("2"), nil)
+				var p *int
+				Nil(p)
 			},
 		},
 		{
-			name: "must3-nil",
+			name: "error-nil-ok",
 			fn: func() {
-				Must3(1, 2, errors.New("3"), nil)
+				Ok(42, nil)
+			},
+		},
+		{
+			name: "true",
+			fn: func() {
+				True(true, "true")
+			},
+		},
+		{
+			name: "true-f",
+			fn: func() {
+				Truef(true, "true-%s", "f")
 			},
 		},
 	}
