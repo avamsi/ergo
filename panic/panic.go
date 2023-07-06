@@ -41,6 +41,10 @@ func Must3[T1 any, T2 any, T3 any](arg1 T1, arg2 T2, arg3 T3, err error) (T1, T2
 	return arg1, arg2, arg3
 }
 
+func Panic(args ...any) {
+	panic(fmt.Sprint(args...))
+}
+
 func Panicf(format string, args ...any) {
 	panic(fmt.Sprintf(format, args...))
 }

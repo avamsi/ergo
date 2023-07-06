@@ -55,6 +55,13 @@ func TestPanic(t *testing.T) {
 			want: "must3",
 		},
 		{
+			name: "panic",
+			fn: func() {
+				Panic("panic ", 4, 2)
+			},
+			want: "panic 4 2",
+		},
+		{
 			name: "panicf",
 			fn: func() {
 				Panicf("panic%s", "f")
