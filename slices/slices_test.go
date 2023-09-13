@@ -6,7 +6,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestChunks(t *testing.T) {
+func TestShard(t *testing.T) {
 	tests := []struct {
 		name string
 		s    []int
@@ -16,8 +16,8 @@ func TestChunks(t *testing.T) {
 		{
 			name: "nil",
 			s:    nil,
-			n:    0,
-			want: nil,
+			n:    1,
+			want: [][]int{nil},
 		},
 		{
 			name: "nils",
@@ -51,7 +51,7 @@ func TestChunks(t *testing.T) {
 			name: "non-empty-optimal",
 			s:    []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
 			n:    4,
-			// Should avoid both 2-2-2-4 and 3-3-3-1 chunks.
+			// Should avoid both 2-2-2-4 and 3-3-3-1 shards.
 			want: [][]int{
 				{1, 2, 3},
 				{4, 5, 6},
@@ -63,11 +63,12 @@ func TestChunks(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			var got [][]int
-			Chunks(test.s, test.n, func(i int, chunk []int) {
+			it := Shard(test.s, test.n)
+			it(func(i int, shard []int) {
 				if l := len(got); i != l {
 					t.Errorf("(i=)%v != %v(=len(%#v(=got))\n", i, l, got)
 				}
-				got = append(got, chunk)
+				got = append(got, shard)
 			})
 			if diff := cmp.Diff(test.want, got); diff != "" {
 				t.Errorf("Chunks(%#v) returned diff(-want +got):\n%v", test.s, diff)
