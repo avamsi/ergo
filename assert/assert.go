@@ -10,7 +10,7 @@ func isNil(v any) bool {
 		return true
 	}
 	defer func() {
-		recover() // not nil if IsNil below panics
+		_ = recover() // not nil if IsNil below panics
 	}()
 	return reflect.ValueOf(v).IsNil()
 }
