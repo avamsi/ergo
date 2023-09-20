@@ -8,8 +8,8 @@ func Annotate(err *error, msg string) {
 	}
 }
 
-func Annotatef(err *error, format string, args ...any) {
+func Annotatef(err *error, format string, a ...any) {
 	if *err != nil {
-		*err = fmt.Errorf("%s: %w", fmt.Sprintf(format, args...), *err)
+		*err = fmt.Errorf("%s: %w", fmt.Sprintf(format, a...), *err)
 	}
 }

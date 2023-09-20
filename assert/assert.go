@@ -21,11 +21,11 @@ func Nil(v any) {
 	}
 }
 
-func Ok[T any](arg T, err error) T {
+func Ok[T any](a T, err error) T {
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("not ok: %v, %v", a, err))
 	}
-	return arg
+	return a
 }
 
 func True(cond bool, msg string) {
@@ -34,8 +34,8 @@ func True(cond bool, msg string) {
 	}
 }
 
-func Truef(cond bool, format string, args ...any) {
+func Truef(cond bool, format string, a ...any) {
 	if !cond {
-		panic(fmt.Sprintf(format, args...))
+		panic(fmt.Sprintf(format, a...))
 	}
 }

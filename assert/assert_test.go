@@ -36,23 +36,44 @@ func TestPanic(t *testing.T) {
 		{
 			name: "map-not-nil",
 			fn: func() {
-				Nil(map[int]int{})
+				Nil(map[int]int{42: 69})
 			},
-			want: "not nil: map[]",
+			want: "not nil: map[42:69]",
 		},
 		{
 			name: "slice-not-nil",
 			fn: func() {
-				Nil([]int{})
+				Nil([]int{42, 69})
 			},
-			want: "not nil: []",
+			want: "not nil: [42 69]",
 		},
 		{
-			name: "error-not-ok",
+			name: "struct-pointer-not-nil",
+			fn: func() {
+				Nil(&struct{ x, y int }{42, 69})
+			},
+			want: "not nil: &{42 69}",
+		},
+		{
+			name: "int-error-not-ok",
 			fn: func() {
 				Ok(42, errors.New("err"))
 			},
-			want: "err",
+			want: "not ok: 42, err",
+		},
+		{
+			name: "slice-error-not-ok",
+			fn: func() {
+				Ok([]int{42, 69}, errors.New("err"))
+			},
+			want: "not ok: [42 69], err",
+		},
+		{
+			name: "struct-error-not-ok",
+			fn: func() {
+				Ok(struct{ x, y int }{42, 69}, errors.New("err"))
+			},
+			want: "not ok: {42 69}, err",
 		},
 		{
 			name: "false-not-true",
