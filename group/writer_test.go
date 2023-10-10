@@ -11,13 +11,15 @@ import (
 
 func TestWriterSimple(t *testing.T) {
 	var (
-		b bytes.Buffer
-		w = NewWriter(&b, 5)
+		b   bytes.Buffer
+		w   = NewWriter(&b, 5)
+		err error
 	)
 	for i := 0; i < 5; i++ {
-		fmt.Fprintln(w.AddSection(), i)
+		_, e := fmt.Fprintln(w.Section(i), i)
+		err = errors.Join(err, e)
 	}
-	if err := w.Close(); err != nil {
+	if err = errors.Join(err, w.Close()); err != nil {
 		t.Error(err)
 	}
 	var (
@@ -37,16 +39,14 @@ func TestWriterConcurrent(t *testing.T) {
 	)
 	for i := 0; i < 5; i++ {
 		i := i // TODO: remove after Go 1.22.
-		w := w.AddSection()
 		g.Go(func() error {
+			w := w.Section(i)
+			defer w.Close()
 			fmt.Fprintln(w, i)
 			return nil
 		})
 	}
-	if err := g.Wait(); err != nil {
-		t.Error(err)
-	}
-	if err := w.Close(); err != nil {
+	if err := errors.Join(g.Wait(), w.Close()); err != nil {
 		t.Error(err)
 	}
 	var (
@@ -68,11 +68,11 @@ func (w errWriter) Write([]byte) (int, error) {
 
 func TestWriterError(t *testing.T) {
 	var (
-		want = errors.New("error")
-		w    = NewWriter(errWriter{want}, 1)
+		want   = errors.New("error")
+		w      = NewWriter(errWriter{want}, 1)
+		_, got = fmt.Fprintln(w.Section(0), "ok")
 	)
-	fmt.Fprintln(w.AddSection(), "ok")
-	if got := w.Close(); got != want {
+	if got = errors.Join(got, w.Close()); got.Error() != want.Error() {
 		t.Errorf("got %v, want %v", got, want)
 	}
 }
