@@ -6,27 +6,34 @@ import (
 )
 
 type Writer struct {
-	delegate io.Writer
-	sections chan *bytes.Buffer
+	w        io.Writer
+	sections []*bytes.Buffer
+	closed   bool
 }
 
-func NewWriter(delegate io.Writer, limit int) *Writer {
+func NewWriter(w io.Writer, n int) *Writer {
 	return &Writer{
-		delegate: delegate,
-		sections: make(chan *bytes.Buffer, limit),
+		w:        w,
+		sections: make([]*bytes.Buffer, 0, n),
 	}
 }
 
-func (w *Writer) NewSection() io.Writer {
+func (g *Writer) AddSection() io.Writer {
+	if g.closed {
+		panic("group.Writer already closed")
+	}
 	var b bytes.Buffer
-	w.sections <- &b
+	g.sections = append(g.sections, &b)
 	return &b
 }
 
-func (w *Writer) Close() error {
-	close(w.sections)
-	for b := range w.sections {
-		if _, err := io.Copy(w.delegate, b); err != nil {
+func (g *Writer) Close() error {
+	if g.closed {
+		return nil
+	}
+	g.closed = true
+	for _, b := range g.sections {
+		if _, err := b.WriteTo(g.w); err != nil {
 			return err
 		}
 	}

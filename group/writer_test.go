@@ -15,7 +15,7 @@ func TestWriterSimple(t *testing.T) {
 		w = NewWriter(&b, 5)
 	)
 	for i := 0; i < 5; i++ {
-		fmt.Fprintln(w.NewSection(), i)
+		fmt.Fprintln(w.AddSection(), i)
 	}
 	if err := w.Close(); err != nil {
 		t.Error(err)
@@ -37,7 +37,7 @@ func TestWriterConcurrent(t *testing.T) {
 	)
 	for i := 0; i < 5; i++ {
 		i := i // TODO: remove after Go 1.22.
-		w := w.NewSection()
+		w := w.AddSection()
 		g.Go(func() error {
 			fmt.Fprintln(w, i)
 			return nil
@@ -71,7 +71,7 @@ func TestWriterError(t *testing.T) {
 		want = errors.New("error")
 		w    = NewWriter(errWriter{want}, 1)
 	)
-	fmt.Fprintln(w.NewSection(), "ok")
+	fmt.Fprintln(w.AddSection(), "ok")
 	if got := w.Close(); got != want {
 		t.Errorf("got %v, want %v", got, want)
 	}
