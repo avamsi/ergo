@@ -20,7 +20,7 @@ func NewWriter(w io.Writer, n int) *Writer {
 
 func (g *Writer) AddSection() io.Writer {
 	if g.closed {
-		panic("group.Writer already closed")
+		panic("group.Writer: already closed")
 	}
 	var b bytes.Buffer
 	g.sections = append(g.sections, &b)
@@ -31,11 +31,11 @@ func (g *Writer) Close() error {
 	if g.closed {
 		return nil
 	}
-	g.closed = true
 	for _, b := range g.sections {
 		if _, err := b.WriteTo(g.w); err != nil {
 			return err
 		}
 	}
+	g.closed = true
 	return nil
 }
