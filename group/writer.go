@@ -7,35 +7,53 @@ import (
 
 type Writer struct {
 	w        io.Writer
-	sections []*bytes.Buffer
+	sections []*section
 	closed   bool
 }
 
 func NewWriter(w io.Writer, n int) *Writer {
 	return &Writer{
 		w:        w,
-		sections: make([]*bytes.Buffer, 0, n),
+		sections: make([]*section, 0, n),
 	}
 }
 
 func (g *Writer) AddSection() io.Writer {
 	if g.closed {
-		panic("group.Writer: already closed")
+		panic("group: already closed")
 	}
-	var b bytes.Buffer
-	g.sections = append(g.sections, &b)
-	return &b
+	s := &section{g: g}
+	g.sections = append(g.sections, s)
+	return s
 }
 
 func (g *Writer) Close() error {
-	if g.closed {
-		return nil
-	}
 	for _, b := range g.sections {
-		if _, err := b.WriteTo(g.w); err != nil {
+		if err := b.close(); err != nil {
 			return err
 		}
 	}
 	g.closed = true
+	return nil
+}
+
+type section struct {
+	g      *Writer
+	b      bytes.Buffer
+	closed bool
+}
+
+func (s *section) Write(p []byte) (int, error) {
+	if s.closed {
+		panic("section: already closed")
+	}
+	return s.b.Write(p)
+}
+
+func (s *section) close() error {
+	if _, err := s.b.WriteTo(s.g.w); err != nil {
+		return err
+	}
+	s.closed = true
 	return nil
 }
