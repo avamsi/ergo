@@ -41,9 +41,8 @@ func TestWriterConcurrent(t *testing.T) {
 		i := i // TODO: remove after Go 1.22.
 		g.Go(func() error {
 			w := w.Section(i)
-			defer w.Close()
 			fmt.Fprintln(w, i)
-			return nil
+			return w.Close()
 		})
 	}
 	if err := errors.Join(g.Wait(), w.Close()); err != nil {
@@ -55,6 +54,25 @@ func TestWriterConcurrent(t *testing.T) {
 	)
 	if got != want {
 		t.Errorf("got %s, want %s", got, want)
+	}
+}
+
+func TestWriterRace(t *testing.T) {
+	var (
+		g errgroup.Group
+		b bytes.Buffer
+		w = NewWriter(&b, 10000)
+	)
+	for i := 0; i < 10000; i++ {
+		i := i // TODO: remove after Go 1.22.
+		g.Go(func() error {
+			w := w.Section(i)
+			fmt.Fprintln(w, i)
+			return w.Close()
+		})
+	}
+	if err := errors.Join(g.Wait(), w.Close()); err != nil {
+		t.Error(err)
 	}
 }
 

@@ -4,19 +4,22 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"sync"
 	"sync/atomic"
 )
 
 type Writer struct {
 	w        io.Writer    // synchronized by active
+	n        int32        //
 	sections []*section   //
 	offset   int          // [0, offset) is written, synchronized by active
+	m        sync.Mutex   // synchronizes active and section.closed
 	active   atomic.Int32 // [0, active) is closed
 }
 
 func NewWriter(w io.Writer, n int) *Writer {
 	var (
-		g        = &Writer{w: w}
+		g        = &Writer{w: w, n: int32(n)}
 		sections = make([]*section, n)
 	)
 	for i := range sections {
@@ -31,18 +34,18 @@ func (g *Writer) Section(i int) io.WriteCloser {
 }
 
 func (g *Writer) Close() error {
-	// It's possible for the sections to not be "drained" completely, even if
-	// all of them are closed, depending on the order they're closed in.
 	for _, s := range g.sections[g.active.Load():] {
 		if err := s.Close(); err != nil {
 			return err
 		}
 	}
-	return nil
+	// It's possible for the sections to not be drained completely, even if
+	// all of them are closed, depending on the order they're closed in.
+	return g.drain(g.n)
 }
 
-func (g *Writer) drain() error {
-	for _, s := range g.sections[g.offset : g.active.Load()+1] {
+func (g *Writer) drain(till int32) error {
+	for _, s := range g.sections[g.offset:till] {
 		if _, err := s.b.WriteTo(g.w); err != nil {
 			return err
 		}
@@ -55,18 +58,18 @@ type section struct {
 	g      *Writer
 	i      int32
 	b      bytes.Buffer
-	closed atomic.Bool
+	closed bool
 }
 
 func (s *section) Write(p []byte) (int, error) {
-	if s.closed.Load() {
+	if s.closed {
 		panic(fmt.Sprintln("section: already closed", s.i))
 	}
 	switch active := s.g.active.Load(); {
 	case s.i > active:
 		return s.b.Write(p)
 	case s.i == active:
-		if err := s.g.drain(); err != nil {
+		if err := s.g.drain(s.i + 1); err != nil {
 			return 0, err
 		}
 		return s.g.w.Write(p)
@@ -76,29 +79,32 @@ func (s *section) Write(p []byte) (int, error) {
 }
 
 func (s *section) Close() error {
+	s.g.m.Lock()
+	unlock := true
+	defer func() {
+		if unlock {
+			s.g.m.Unlock()
+		}
+	}()
 	switch active := s.g.active.Load(); {
 	case s.i > active:
-		s.closed.Store(true)
+		s.closed = true
 		return nil
 	case s.i == active:
-		if err := s.g.drain(); err != nil {
+		s.g.m.Unlock()
+		if err := s.g.drain(s.i + 1); err != nil {
+			unlock = false
 			return err
 		}
-		s.closed.Store(true)
+		s.g.m.Lock()
+		s.closed = true
 		active++
-		// Try to advance the active section as much as possible, so we continue
-		// to forward writes to the underlying writer in realtime.
-		// Note: it's possible for the next open section's close to race with
-		// this and "slip" away from us, so this is very much a best effort.
-		for i, s := range s.g.sections[active:] {
-			if !s.closed.Load() {
-				active += int32(i)
-				break
-			}
+		for active < s.g.n && s.g.sections[active].closed {
+			active++
 		}
 		s.g.active.Store(active)
 		return nil
-	case s.closed.Load():
+	case s.closed:
 		return nil
 	default: // s.i < active
 		panic(fmt.Sprintln("section: impossible", s.i, active))
