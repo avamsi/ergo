@@ -1,4 +1,4 @@
-package group
+package group_test
 
 import (
 	"bytes"
@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/avamsi/ergo/group"
 	"golang.org/x/sync/errgroup"
 )
 
 func TestWriterSimple(t *testing.T) {
 	var (
 		b   bytes.Buffer
-		w   = NewWriter(&b, 5)
+		w   = group.NewWriter(&b, 5)
 		err error
 	)
 	for i := 0; i < 5; i++ {
@@ -35,7 +36,7 @@ func TestWriterConcurrent(t *testing.T) {
 	var (
 		g errgroup.Group
 		b bytes.Buffer
-		w = NewWriter(&b, 5)
+		w = group.NewWriter(&b, 5)
 	)
 	for i := 0; i < 5; i++ {
 		i := i // TODO: remove after Go 1.22.
@@ -61,7 +62,7 @@ func TestWriterRace(t *testing.T) {
 	var (
 		g errgroup.Group
 		b bytes.Buffer
-		w = NewWriter(&b, 10000)
+		w = group.NewWriter(&b, 10000)
 	)
 	for i := 0; i < 10000; i++ {
 		i := i // TODO: remove after Go 1.22.
@@ -87,7 +88,7 @@ func (w errWriter) Write([]byte) (int, error) {
 func TestWriterError(t *testing.T) {
 	var (
 		want   = errors.New("error")
-		w      = NewWriter(errWriter{want}, 1)
+		w      = group.NewWriter(errWriter{want}, 1)
 		_, got = fmt.Fprintln(w.Section(0), "ok")
 	)
 	if got = errors.Join(got, w.Close()); got.Error() != want.Error() {

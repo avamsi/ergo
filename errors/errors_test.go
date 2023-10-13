@@ -1,8 +1,10 @@
-package errors
+package errors_test
 
 import (
 	"errors"
 	"testing"
+
+	ergoerrors "github.com/avamsi/ergo/errors"
 )
 
 func TestAnnotate(t *testing.T) {
@@ -28,7 +30,7 @@ func TestAnnotate(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			err := test.err // copy so we don't modify the original
-			Annotate(&err, test.msg)
+			ergoerrors.Annotate(&err, test.msg)
 			if test.err != nil && err.Error() != test.want {
 				t.Errorf("Annotate(...) = %#v, want %#v\n", err.Error(), test.want)
 			}
@@ -67,7 +69,7 @@ func TestAnnotatef(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			err := test.err // copy so we don't modify the original
-			Annotatef(&err, test.format, test.args...)
+			ergoerrors.Annotatef(&err, test.format, test.args...)
 			if test.err != nil && err.Error() != test.want {
 				t.Errorf("Annotatef(...) = %#v, want %#v\n", err.Error(), test.want)
 			}

@@ -1,8 +1,9 @@
-package slices
+package slices_test
 
 import (
 	"testing"
 
+	"github.com/avamsi/ergo/slices"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -63,7 +64,7 @@ func TestShard(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			var got [][]int
-			it := Shard(test.s, test.n)
+			it := slices.Shard(test.s, test.n)
 			it(func(i int, shard []int) {
 				if l := len(got); i != l {
 					t.Errorf("(i=)%v != %v(=len(%#v(=got))\n", i, l, got)

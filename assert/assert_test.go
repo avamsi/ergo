@@ -1,9 +1,11 @@
-package assert
+package assert_test
 
 import (
 	"errors"
 	"runtime/debug"
 	"testing"
+
+	"github.com/avamsi/ergo/assert"
 )
 
 func TestPanic(t *testing.T) {
@@ -15,77 +17,77 @@ func TestPanic(t *testing.T) {
 		{
 			name: "int-not-nil",
 			fn: func() {
-				Nil(42)
+				assert.Nil(42)
 			},
 			want: "not nil: 42",
 		},
 		{
 			name: "string-not-nil",
 			fn: func() {
-				Nil("boo")
+				assert.Nil("boo")
 			},
 			want: "not nil: boo",
 		},
 		{
 			name: "error-not-nil",
 			fn: func() {
-				Nil(errors.New("err"))
+				assert.Nil(errors.New("err"))
 			},
 			want: "not nil: err",
 		},
 		{
 			name: "map-not-nil",
 			fn: func() {
-				Nil(map[int]int{42: 69})
+				assert.Nil(map[int]int{42: 69})
 			},
 			want: "not nil: map[42:69]",
 		},
 		{
 			name: "slice-not-nil",
 			fn: func() {
-				Nil([]int{42, 69})
+				assert.Nil([]int{42, 69})
 			},
 			want: "not nil: [42 69]",
 		},
 		{
 			name: "struct-pointer-not-nil",
 			fn: func() {
-				Nil(&struct{ x, y int }{42, 69})
+				assert.Nil(&struct{ x, y int }{42, 69})
 			},
 			want: "not nil: &{42 69}",
 		},
 		{
 			name: "int-error-not-ok",
 			fn: func() {
-				Ok(42, errors.New("err"))
+				assert.Ok(42, errors.New("err"))
 			},
 			want: "not ok: 42, err",
 		},
 		{
 			name: "slice-error-not-ok",
 			fn: func() {
-				Ok([]int{42, 69}, errors.New("err"))
+				assert.Ok([]int{42, 69}, errors.New("err"))
 			},
 			want: "not ok: [42 69], err",
 		},
 		{
 			name: "struct-error-not-ok",
 			fn: func() {
-				Ok(struct{ x, y int }{42, 69}, errors.New("err"))
+				assert.Ok(struct{ x, y int }{42, 69}, errors.New("err"))
 			},
 			want: "not ok: {42 69}, err",
 		},
 		{
 			name: "false-not-true",
 			fn: func() {
-				True(false, "false")
+				assert.True(false, "false")
 			},
 			want: "false",
 		},
 		{
 			name: "false-not-true-f",
 			fn: func() {
-				Truef(false, "false-%s", "f")
+				assert.Truef(false, "false-%s", "f")
 			},
 			want: "false-f",
 		},
@@ -114,53 +116,53 @@ func TestNotPanic(t *testing.T) {
 		{
 			name: "nil",
 			fn: func() {
-				Nil(nil)
+				assert.Nil(nil)
 			},
 		},
 		{
 			name: "zero-error-nil",
 			fn: func() {
 				var err error
-				Nil(err)
+				assert.Nil(err)
 			},
 		},
 		{
 			name: "zero-map-nil",
 			fn: func() {
 				var m map[int]int
-				Nil(m)
+				assert.Nil(m)
 			},
 		},
 		{
 			name: "zero-slice-nil",
 			fn: func() {
 				var s []int
-				Nil(s)
+				assert.Nil(s)
 			},
 		},
 		{
 			name: "zero-pointer-nil",
 			fn: func() {
 				var p *int
-				Nil(p)
+				assert.Nil(p)
 			},
 		},
 		{
 			name: "error-nil-ok",
 			fn: func() {
-				Ok(42, nil)
+				assert.Ok(42, nil)
 			},
 		},
 		{
 			name: "true",
 			fn: func() {
-				True(true, "true")
+				assert.True(true, "true")
 			},
 		},
 		{
 			name: "true-f",
 			fn: func() {
-				Truef(true, "true-%s", "f")
+				assert.Truef(true, "true-%s", "f")
 			},
 		},
 	}

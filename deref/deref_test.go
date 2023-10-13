@@ -1,6 +1,10 @@
-package deref
+package deref_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/avamsi/ergo/deref"
+)
 
 func TestOr(t *testing.T) {
 	tests := []struct {
@@ -24,7 +28,7 @@ func TestOr(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			if got := Or(test.ptr, test.value); got != test.want {
+			if got := deref.Or(test.ptr, test.value); got != test.want {
 				t.Errorf("Or(%#v, %#v) = %#v, want %#v\n", test.ptr, test.value, got, test.want)
 			}
 		})
