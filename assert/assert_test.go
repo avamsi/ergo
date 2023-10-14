@@ -8,12 +8,31 @@ import (
 	"github.com/avamsi/ergo/assert"
 )
 
+type errCloser struct{}
+
+func (c errCloser) Close() error {
+	return errors.New("err")
+}
+
+type nopCloser struct{}
+
+func (c nopCloser) Close() error {
+	return nil
+}
+
 func TestPanic(t *testing.T) {
 	tests := []struct {
 		name string
 		fn   func()
 		want string
 	}{
+		{
+			name: "not-closed",
+			fn: func() {
+				assert.Close(errCloser{})
+			},
+			want: "err",
+		},
 		{
 			name: "int-not-nil",
 			fn: func() {
@@ -113,6 +132,12 @@ func TestNotPanic(t *testing.T) {
 		name string
 		fn   func()
 	}{
+		{
+			name: "closed",
+			fn: func() {
+				assert.Close(nopCloser{})
+			},
+		},
 		{
 			name: "nil",
 			fn: func() {

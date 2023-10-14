@@ -2,8 +2,15 @@ package assert
 
 import (
 	"fmt"
+	"io"
 	"reflect"
 )
+
+func Close(c io.Closer) {
+	if err := c.Close(); err != nil {
+		panic(err)
+	}
+}
 
 func isNil(v any) bool {
 	if v == nil {
