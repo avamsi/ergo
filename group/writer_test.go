@@ -16,7 +16,7 @@ func TestWriterSimple(t *testing.T) {
 		w   = group.NewWriter(&b, 5)
 		err error
 	)
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		_, e := fmt.Fprintln(w.Section(i), i)
 		err = errors.Join(err, e)
 	}
@@ -38,8 +38,7 @@ func TestWriterConcurrent(t *testing.T) {
 		b bytes.Buffer
 		w = group.NewWriter(&b, 5)
 	)
-	for i := 0; i < 5; i++ {
-		i := i // TODO: remove after Go 1.22.
+	for i := range 5 {
 		g.Go(func() error {
 			w := w.Section(i)
 			fmt.Fprintln(w, i)
@@ -64,8 +63,7 @@ func TestWriterRace(t *testing.T) {
 		b bytes.Buffer
 		w = group.NewWriter(&b, 10000)
 	)
-	for i := 0; i < 10000; i++ {
-		i := i // TODO: remove after Go 1.22.
+	for i := range 10000 {
 		g.Go(func() error {
 			w := w.Section(i)
 			fmt.Fprintln(w, i)
