@@ -12,10 +12,7 @@ func Close(c io.Closer) {
 	}
 }
 
-func isNil(v any) bool {
-	if v == nil {
-		return true
-	}
+func reflectIsNil(v any) bool {
 	defer func() {
 		_ = recover() // not nil if IsNil below panics
 	}()
@@ -23,7 +20,10 @@ func isNil(v any) bool {
 }
 
 func Nil(v any) {
-	if !isNil(v) {
+	if v == nil {
+		return
+	}
+	if !reflectIsNil(v) {
 		panic(fmt.Sprint("not nil: ", v))
 	}
 }
