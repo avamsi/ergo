@@ -1,9 +1,10 @@
 package assert
 
 import (
-	"fmt"
 	"io"
 	"reflect"
+
+	"github.com/avamsi/ergo"
 )
 
 func Close(c io.Closer) {
@@ -24,13 +25,13 @@ func Nil(v any) {
 		return
 	}
 	if !reflectIsNil(v) {
-		panic(fmt.Sprint("not nil: ", v))
+		ergo.Panic("not nil: ", v)
 	}
 }
 
 func Ok[T any](v T, err error) T {
 	if err != nil {
-		panic(fmt.Sprintf("not ok: %v, %v", v, err))
+		ergo.Panicf("not ok: %v, %v", v, err)
 	}
 	return v
 }
@@ -43,6 +44,6 @@ func True(cond bool, msg string) {
 
 func Truef(cond bool, format string, a ...any) {
 	if !cond {
-		panic(fmt.Sprintf(format, a...))
+		ergo.Panicf(format, a...)
 	}
 }

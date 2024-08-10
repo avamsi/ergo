@@ -6,6 +6,8 @@ import (
 	"io"
 	"sync"
 	"sync/atomic"
+
+	"github.com/avamsi/ergo"
 )
 
 type Writer struct {
@@ -63,7 +65,7 @@ type section struct {
 
 func (s *section) Write(p []byte) (int, error) {
 	if s.closed {
-		panic(fmt.Sprintln("section: already closed", s.i))
+		ergo.Panic("section: already closed", s.i)
 	}
 	switch active := s.g.active.Load(); {
 	case s.i > active:
@@ -74,7 +76,7 @@ func (s *section) Write(p []byte) (int, error) {
 		}
 		return s.g.w.Write(p)
 	default: // s.i < active
-		panic(fmt.Sprintln("section: impossible", s.i, active))
+		panic(fmt.Sprint("section: impossible", s.i, active))
 	}
 }
 
@@ -107,6 +109,6 @@ func (s *section) Close() error {
 	case s.closed:
 		return nil
 	default: // s.i < active
-		panic(fmt.Sprintln("section: impossible", s.i, active))
+		panic(fmt.Sprint("section: impossible", s.i, active))
 	}
 }
