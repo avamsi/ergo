@@ -23,89 +23,89 @@ func (c nopCloser) Close() error {
 func TestPanic(t *testing.T) {
 	tests := []struct {
 		name string
-		fn   func()
+		f    func()
 		want string
 	}{
 		{
 			name: "not-closed",
-			fn: func() {
+			f: func() {
 				assert.Close(errCloser{})
 			},
 			want: "err",
 		},
 		{
 			name: "int-not-nil",
-			fn: func() {
+			f: func() {
 				assert.Nil(42)
 			},
 			want: "not nil: 42",
 		},
 		{
 			name: "string-not-nil",
-			fn: func() {
+			f: func() {
 				assert.Nil("boo")
 			},
 			want: "not nil: boo",
 		},
 		{
 			name: "error-not-nil",
-			fn: func() {
+			f: func() {
 				assert.Nil(errors.New("err"))
 			},
 			want: "not nil: err",
 		},
 		{
 			name: "map-not-nil",
-			fn: func() {
+			f: func() {
 				assert.Nil(map[int]int{42: 69})
 			},
 			want: "not nil: map[42:69]",
 		},
 		{
 			name: "slice-not-nil",
-			fn: func() {
+			f: func() {
 				assert.Nil([]int{42, 69})
 			},
 			want: "not nil: [42 69]",
 		},
 		{
 			name: "struct-pointer-not-nil",
-			fn: func() {
+			f: func() {
 				assert.Nil(&struct{ x, y int }{42, 69})
 			},
 			want: "not nil: &{42 69}",
 		},
 		{
 			name: "int-error-not-ok",
-			fn: func() {
+			f: func() {
 				assert.Ok(42, errors.New("err"))
 			},
 			want: "not ok: 42, err",
 		},
 		{
 			name: "slice-error-not-ok",
-			fn: func() {
+			f: func() {
 				assert.Ok([]int{42, 69}, errors.New("err"))
 			},
 			want: "not ok: [42 69], err",
 		},
 		{
 			name: "struct-error-not-ok",
-			fn: func() {
+			f: func() {
 				assert.Ok(struct{ x, y int }{42, 69}, errors.New("err"))
 			},
 			want: "not ok: {42 69}, err",
 		},
 		{
 			name: "false-not-true",
-			fn: func() {
+			f: func() {
 				assert.True(false, "false")
 			},
 			want: "false",
 		},
 		{
 			name: "false-not-true-f",
-			fn: func() {
+			f: func() {
 				assert.Truef(false, "false-%s", "f")
 			},
 			want: "false-f",
@@ -114,15 +114,15 @@ func TestPanic(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			defer func() {
-				r := recover()
-				if s, ok := r.(error); ok {
-					r = s.Error()
+				got := recover()
+				if err, ok := got.(error); ok {
+					got = err.Error()
 				}
-				if r != test.want {
-					t.Errorf("want panic %#v, got %#v\n", test.want, r)
+				if got != test.want {
+					t.Errorf("got panic %#v, want %#v", got, test.want)
 				}
 			}()
-			test.fn()
+			test.f()
 		})
 	}
 }
@@ -130,63 +130,63 @@ func TestPanic(t *testing.T) {
 func TestNotPanic(t *testing.T) {
 	tests := []struct {
 		name string
-		fn   func()
+		f    func()
 	}{
 		{
 			name: "closed",
-			fn: func() {
+			f: func() {
 				assert.Close(nopCloser{})
 			},
 		},
 		{
 			name: "nil",
-			fn: func() {
+			f: func() {
 				assert.Nil(nil)
 			},
 		},
 		{
 			name: "zero-error-nil",
-			fn: func() {
+			f: func() {
 				var err error
 				assert.Nil(err)
 			},
 		},
 		{
 			name: "zero-map-nil",
-			fn: func() {
+			f: func() {
 				var m map[int]int
 				assert.Nil(m)
 			},
 		},
 		{
 			name: "zero-slice-nil",
-			fn: func() {
+			f: func() {
 				var s []int
 				assert.Nil(s)
 			},
 		},
 		{
 			name: "zero-pointer-nil",
-			fn: func() {
+			f: func() {
 				var p *int
 				assert.Nil(p)
 			},
 		},
 		{
 			name: "error-nil-ok",
-			fn: func() {
+			f: func() {
 				assert.Ok(42, nil)
 			},
 		},
 		{
 			name: "true",
-			fn: func() {
+			f: func() {
 				assert.True(true, "true")
 			},
 		},
 		{
 			name: "true-f",
-			fn: func() {
+			f: func() {
 				assert.Truef(true, "true-%s", "f")
 			},
 		},
@@ -194,11 +194,11 @@ func TestNotPanic(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			defer func() {
-				if r := recover(); r != nil {
-					t.Errorf("want no panic, got: %#v\n%s", r, debug.Stack())
+				if got := recover(); got != nil {
+					t.Errorf("want no panic, got: %#v\n%s", got, debug.Stack())
 				}
 			}()
-			test.fn()
+			test.f()
 		})
 	}
 }
