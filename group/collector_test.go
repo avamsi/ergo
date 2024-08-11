@@ -12,7 +12,7 @@ import (
 func TestCollector(t *testing.T) {
 	tests := []struct {
 		name string
-		fs   []func() int
+		fs   []func(func(int))
 		want []int
 	}{
 		{
@@ -22,10 +22,10 @@ func TestCollector(t *testing.T) {
 		},
 		{
 			name: "1-3",
-			fs: []func() int{
-				func() int { return 1 },
-				func() int { return 2 },
-				func() int { return 3 },
+			fs: []func(func(int)){
+				func(collect func(int)) { collect(1) },
+				func(collect func(int)) { collect(2) },
+				func(collect func(int)) { collect(3) },
 			},
 			want: []int{1, 2, 3},
 		},
@@ -34,7 +34,7 @@ func TestCollector(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			c := group.NewCollector(make(chan int))
 			for _, f := range test.fs {
-				c.Go(f)
+				c.Go(func() { f(c.Collect) })
 			}
 			var got []int
 			for i := range c.Close() {

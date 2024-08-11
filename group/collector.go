@@ -11,11 +11,15 @@ func NewCollector[T any](results chan T) *Collector[T] {
 	return &Collector[T]{results: results}
 }
 
-func (c *Collector[T]) Go(f func() T) {
+func (c *Collector[T]) Collect(v T) {
+	c.results <- v
+}
+
+func (c *Collector[T]) Go(f func()) {
 	c.wg.Add(1)
 	go func() {
-		defer c.wg.Done()
-		c.results <- f()
+		f()
+		c.wg.Done()
 	}()
 }
 
