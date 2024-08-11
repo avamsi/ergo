@@ -64,13 +64,11 @@ func TestShard(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			var got [][]int
-			it := slices.Shard(test.s, test.n)
-			it(func(shard []int) bool {
+			for shard := range slices.Shard(test.s, test.n) {
 				got = append(got, shard)
-				return true
-			})
+			}
 			if diff := cmp.Diff(test.want, got); diff != "" {
-				t.Errorf("Chunks(%#v) returned diff(-want +got):\n%v", test.s, diff)
+				t.Errorf("Shard(%#v) has diff(-want +got):\n%s", test.s, diff)
 			}
 		})
 	}
