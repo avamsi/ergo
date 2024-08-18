@@ -17,21 +17,21 @@ func Annotatef(err *error, format string, a ...any) {
 	}
 }
 
-type joinError struct {
+type multiError struct {
 	errs []error
 }
 
-func (err *joinError) Error() string {
+func (merr *multiError) Error() string {
 	var b strings.Builder
-	for _, err := range err.errs {
-		b.WriteString("\n\t")
-		b.WriteString(err.Error())
+	fmt.Fprintf(&b, "%d errors occurred:", len(merr.errs))
+	for i, err := range merr.errs {
+		fmt.Fprintf(&b, "\n%d. %s", i+1, err)
 	}
 	return b.String()
 }
 
-func (err *joinError) Unwrap() []error {
-	return err.errs
+func (merr *multiError) Unwrap() []error {
+	return merr.errs
 }
 
 func Join(errs ...error) error {
@@ -48,6 +48,9 @@ func Join(errs ...error) error {
 	case 1:
 		return errs[0]
 	default:
-		return &joinError{errs[:i:i]}
+		if merr, ok := errs[0].(*multiError); ok {
+			return &multiError{append(merr.errs, errs[1:i]...)}
+		}
+		return &multiError{errs[:i:i]}
 	}
 }
