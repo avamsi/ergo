@@ -28,7 +28,7 @@ func TestWriterSimple(t *testing.T) {
 		want = "0\n1\n2\n3\n4\n"
 	)
 	if got != want {
-		t.Errorf("got %s, want %s", got, want)
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
@@ -53,7 +53,7 @@ func TestWriterConcurrent(t *testing.T) {
 		want = "0\n1\n2\n3\n4\n"
 	)
 	if got != want {
-		t.Errorf("got %s, want %s", got, want)
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
@@ -90,6 +90,6 @@ func TestWriterError(t *testing.T) {
 		_, got = fmt.Fprintln(w.Section(0), "ok")
 	)
 	if got = errors.Join(got, w.Close()); got.Error() != want.Error() {
-		t.Errorf("got %v, want %v", got, want)
+		t.Errorf("got %q, want %q", got, want)
 	}
 }

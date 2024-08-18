@@ -15,7 +15,7 @@ func TestPair(t *testing.T) {
 			got1, got2 = pair.New(first, second).Unpack()
 		)
 		if !cmp.Equal(got1, first) || !cmp.Equal(got2, second) {
-			t.Errorf("New(%v, %v).Unpack() = %v, %v, want %[1]v, %v", first, second, got1, got2)
+			t.Errorf("New(%d, %d).Unpack() = %d, %d, want %[1]d, %d", first, second, got1, got2)
 		}
 	}
 	{
@@ -25,7 +25,7 @@ func TestPair(t *testing.T) {
 			got1, got2 = pair.New(first, second).Unpack()
 		)
 		if !cmp.Equal(got1, first) || !cmp.Equal(got2, second) {
-			t.Errorf("New(%v, %v).Unpack() = %v, %v, want %[1]v, %v", first, second, got1, got2)
+			t.Errorf("New(%d, %d).Unpack() = %d, %d, want %[1]d, %d", first, second, got1, got2)
 		}
 	}
 }

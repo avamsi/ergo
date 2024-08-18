@@ -119,7 +119,7 @@ func TestPanic(t *testing.T) {
 					got = err.Error()
 				}
 				if got != test.want {
-					t.Errorf("got panic %#v, want %#v", got, test.want)
+					t.Errorf("got panic %q, want %q", got, test.want)
 				}
 			}()
 			test.f()
@@ -195,7 +195,7 @@ func TestNotPanic(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			defer func() {
 				if got := recover(); got != nil {
-					t.Errorf("want no panic, got: %#v\n%s", got, debug.Stack())
+					t.Errorf("want no panic, got: %q\n%s", got, debug.Stack())
 				}
 			}()
 			test.f()

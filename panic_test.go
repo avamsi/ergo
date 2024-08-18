@@ -38,7 +38,7 @@ func TestPanic(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			defer func() {
 				if got := recover(); got != test.want {
-					t.Errorf("got panic %#v, want %#v", test.want, got)
+					t.Errorf("got panic %q, want %q", test.want, got)
 				}
 			}()
 			test.f()
@@ -71,7 +71,7 @@ func TestPanicf(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			defer func() {
 				if got := recover(); got != test.want {
-					t.Errorf("got panic %#v, want %#v", test.want, got)
+					t.Errorf("got panic %q, want %q", test.want, got)
 				}
 			}()
 			test.f()

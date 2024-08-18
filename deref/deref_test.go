@@ -29,7 +29,7 @@ func TestOr(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			if got := deref.Or(test.ptr, test.value); got != test.want {
-				t.Errorf("Or(%#v, %#v) = %#v, want %#v", test.ptr, test.value, got, test.want)
+				t.Errorf("Or(%#v, %d) = %d, want %d", test.ptr, test.value, got, test.want)
 			}
 		})
 	}

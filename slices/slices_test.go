@@ -68,7 +68,7 @@ func TestShard(t *testing.T) {
 				got = append(got, shard)
 			}
 			if diff := cmp.Diff(test.want, got); diff != "" {
-				t.Errorf("Shard(%#v) has diff(-want +got):\n%s", test.s, diff)
+				t.Errorf("Shard(%d) has diff(-want +got):\n%s", test.s, diff)
 			}
 		})
 	}
