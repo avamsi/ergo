@@ -8,7 +8,7 @@ import (
 	"github.com/avamsi/ergo/errors"
 )
 
-func TestAnnotate(t *testing.T) {
+func TestHandle(t *testing.T) {
 	tests := []struct {
 		name string
 		err  error
@@ -31,11 +31,11 @@ func TestAnnotate(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			err := test.err // copy so we don't modify the original
-			errors.Annotate(&err, test.msg)
+			errors.Handle(&err, test.msg)
 			if test.err != nil && err.Error() != test.want {
-				t.Errorf("Annotate(...) = %q, want %q", err, test.want)
+				t.Errorf("Handle(...) = %q, want %q", err, test.want)
 			}
-			// Annotate is expected to wrap the input error exactly once, so
+			// Handle is expected to wrap the input error exactly once, so
 			// unwrapping it is expected to return the original error.
 			if got := stderrors.Unwrap(err); got != test.err {
 				t.Errorf("Unwrap(%q) = %q, want %q", err, got, test.err)
@@ -44,7 +44,7 @@ func TestAnnotate(t *testing.T) {
 	}
 }
 
-func TestAnnotatef(t *testing.T) {
+func TestHandlef(t *testing.T) {
 	tests := []struct {
 		name   string
 		err    error
@@ -70,11 +70,11 @@ func TestAnnotatef(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			err := test.err // copy so we don't modify the original
-			errors.Annotatef(&err, test.format, test.args...)
+			errors.Handlef(&err, test.format, test.args...)
 			if test.err != nil && err.Error() != test.want {
-				t.Errorf("Annotatef(...) = %q, want %q", err, test.want)
+				t.Errorf("Handlef(...) = %q, want %q", err, test.want)
 			}
-			// Annotatef is expected to wrap the input error exactly once, so
+			// Handlef is expected to wrap the input error exactly once, so
 			// unwrapping it is expected to return the original error.
 			if got := stderrors.Unwrap(err); got != test.err {
 				t.Errorf("Unwrap(%q) = %q, want %q", err, got, test.err)

@@ -5,15 +5,15 @@ import (
 	"strings"
 )
 
-func Annotate(err *error, msg string) {
+func Handle(err *error, msg string) {
 	if *err != nil {
 		*err = fmt.Errorf("%s: %w", msg, *err)
 	}
 }
 
-func Annotatef(err *error, format string, a ...any) {
+func Handlef(err *error, format string, a ...any) {
 	if *err != nil {
-		*err = fmt.Errorf("%s: %w", fmt.Sprintf(format, a...), *err)
+		*err = fmt.Errorf(format + ": %w", append(a, *err)...)
 	}
 }
 
