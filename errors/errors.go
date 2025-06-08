@@ -13,7 +13,7 @@ func Handle(err *error, msg string) {
 
 func Handlef(err *error, format string, a ...any) {
 	if *err != nil {
-		*err = fmt.Errorf(format + ": %w", append(a, *err)...)
+		*err = fmt.Errorf(format+": %w", append(a, *err)...)
 	}
 }
 
@@ -25,7 +25,7 @@ func (merr *multiError) Error() string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "%d errors occurred:", len(merr.errs))
 	for i, err := range merr.errs {
-		fmt.Fprintf(&b, "\n%d. %s", i+1, err)
+		fmt.Fprintf(&b, "\n  %2d. %s", i+1, err)
 	}
 	return b.String()
 }
