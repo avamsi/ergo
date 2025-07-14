@@ -136,21 +136,21 @@ func TestJoinError(t *testing.T) {
 			},
 			{
 				errs: []error{err1, err2},
-				want: "2 errors occurred:\n1. err1\n2. err2",
+				want: "2 errors occurred:\n   1. err1\n   2. err2",
 			},
 			{
 				errs: []error{err1, nil, err2},
-				want: "2 errors occurred:\n1. err1\n2. err2",
+				want: "2 errors occurred:\n   1. err1\n   2. err2",
 			},
 			{
 				errs: []error{err1, errors.Join(err2, err3)},
 				want: "2 errors occurred:\n" +
-					"1. err1\n" +
-					"2. 2 errors occurred:\n1. err2\n2. err3",
+					"   1. err1\n" +
+					"   2. 2 errors occurred:\n   1. err2\n   2. err3",
 			},
 			{
 				errs: []error{errors.Join(err1, err2), err3},
-				want: "3 errors occurred:\n1. err1\n2. err2\n3. err3",
+				want: "3 errors occurred:\n   1. err1\n   2. err2\n   3. err3",
 			},
 		}
 	)
